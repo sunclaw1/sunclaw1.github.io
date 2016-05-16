@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  background: #ececec;
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var cellWidth = 20;
+var cellHeight = 20;
+var cellTypes = {
+  wall: "X",
+  empty: " ",
+  visited: ".",
+  path: "*",
+  start: "S",
+  goal: "G"
+}
+var maze1 =  ["XXSXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+              "XX*XXXXXXXXXXXXX.....XXXXXXXXXXX",
+              "XX****XXXXXXXXXX.XXX XX     XXXX",
+              "XXXXX*XXXXXX....XXX XX XXX XXXXX",
+              "XXX.X*XXXXXXX.XX XXX XX  XX XXXX",
+              "XXX..***XXXXX.XXXXXX XXXXXX XXXX",
+              "XXXXXXX****...XXXXXX        XXXX",
+              "XXXXXXXXXX*XXXXX XXXXXXXXXXXXXXX",
+              "XXXXXXXXXX XX    XXXXX      XXXX",
+              "XXXXXXXXXX    XXXXXXXX XXXX XXXX",
+              "XXXXXXXXXXX XXXXXXXXXX XXXX XXXX",
+              "XXXXXXXXXXX            XXXX XXXX",
+              "XXXXXXXXXXXXXXXXXXXXXXXX XX XXXX",
+              "XXXXXX              XXXX XX XXXX",
+              "XXXXXX XXXXXXXXXXXX XX      XXXX",
+              "XXXXXX XXG   XXXXXX XXXX XXXXXXX",
+              "XXXXXX XXXXX   XXX            XX",
+              "XXXXXX XXXXXXX XXXXXXXXXXX XXXXX",
+              "XXXXXX XXXXXXX XXXXXXXXXXXXXXXXX",
+              "XXXXXX            XXXXXXXXXXXXXX"];
+function drawMaze(maze, svg){
+    var size = {
+      width : maze[0].length,
+      height : maze.length
+    };
+    // scale svg
+    svg.attr("width", size.width*cellWidth).attr("height", size.height*cellHeight);
+    for(var i = 0; i < size.height;i++){
+      for(var j = 0; j < size.width;j++){
+        // draw a rectangle for each maze cell
+        var cell = svg.append("rect").attr("x", j*cellWidth).attr("y", i*cellHeight).attr("width", cellWidth).attr("height", cellHeight);
+        switch (maze[i][j]) {
+          case cellTypes.wall:
+            cell.style("fill", "purple");
+            break;
+          case cellTypes.empty:
+            cell.style("fill", "white");
+            break;
+          case cellTypes.start:
+            cell.style("fill", "green");
+            break;
+          case cellTypes.goal:
+            cell.style("fill", "red");
+            break;
+          case cellTypes.visited:
+            cell.style("fill", "rgba(55,55,55,0.2)");
+            break;
+          case cellTypes.path:
+            cell.style("fill", "rgba(55,55,55,0.2)");
+            svg.append("circle").attr("cx", j*cellWidth+(cellWidth/2)).attr("cy", i*cellHeight+(cellHeight/2)).attr("r", cellWidth/3).style("fill", "#333");
+            break;
+        }
+      }
+    }
+}
+// create svg
+var svg = d3.select("body").append("svg");
+// copy maze
+var maze = maze1.slice();
+// and draw it!
+drawMaze(maze,svg);
+</script>
