@@ -91,6 +91,9 @@ function findPath(x,y){
   var pre_x = y;
   var pre_y = x;
   var count = 0;
+  if(distance[pre_x][pre_y]==-1){
+    return;
+  }
   while (pre_x != dest_x || pre_y!=dest_y){
     count = count +1;
     if(pre_x!=0 && distance[pre_x-1][pre_y]==distance[pre_x][pre_y]-1){
