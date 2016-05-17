@@ -6,6 +6,7 @@ body {
 }
 </style>
 <body>
+<button id="clear">clear</button>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 var cellWidth = 20;
@@ -27,7 +28,7 @@ var cellTypes = {
   goal: "G"
 }
 var dest_x = 0;
-var dest_y = 1;
+var dest_y = 0;
 
 var maze1 =  ["1G0100000000100",
               "100000100000010",
@@ -74,33 +75,9 @@ var distance = [[-1,0,1,-1,5,6,7,8,9,10,11,12,-1,30,29],
 
                 [21,20,19,18,-1,18,19,20,-1,-1,-1,-1,25,26,27]];
 
-var maze2 =  ["XXSXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-              "XX*XXXXXXXXXXXXX.....XXXXXXXXXXX",
-              "XX****XXXXXXXXXX.XXX XX     XXXX",
-              "XXXXX*XXXXXX....XXX XX XXX XXXXX",
-              "XXX.X*XXXXXXX.XX XXX XX  XX XXXX",
-              "XXX..***XXXXX.XXXXXX XXXXXX XXXX",
-              "XXXXXXX****...XXXXXX        XXXX",
-              "XXXXXXXXXX*XXXXX XXXXXXXXXXXXXXX",
-              "XXXXXXXXXX XX    XXXXX      XXXX",
-              "XXXXXXXXXX    XXXXXXXX XXXX XXXX",
-              "XXXXXXXXXXX XXXXXXXXXX XXXX XXXX",
-              "XXXXXXXXXXX            XXXX XXXX",
-              "XXXXXXXXXXXXXXXXXXXXXXXX XX XXXX",
-              "XXXXXX              XXXX XX XXXX",
-              "XXXXXX XXXXXXXXXXXX XX      XXXX",
-              "XXXXXX XXG   XXXXXX XXXX XXXXXXX",
-              "XXXXXX XXXXX   XXX            XX",
-              "XXXXXX XXXXXXX XXXXXXXXXXX XXXXX",
-              "XXXXXX XXXXXXX XXXXXXXXXXXXXXXXX",
-              "XXXXXX            XXXXXXXXXXXXXX"];
 function drawPath(x,y){
-  // alert(String(x));
-  //         alert(String(y));
   d3.selectAll("rect").each(function(d,i){
     var elt = d3.select(this);
-    // alert("hahaha");
-    // alert(String(elt.attr("x")/cellWidth));
     if (elt.attr("y") == x*cellWidth){
       if(elt.attr("x") == y*cellWidth){
         elt.transition(0)
@@ -129,11 +106,6 @@ function findPath(x,y){
       pre_x = pre_x+1;
       drawPath(pre_x,pre_y);
     }
-    // if (count ==12){
-    //   alert(String(pre_x));
-    //   alert(String(pre_y));
-    //   break;
-    // }
     // break;
   }
 }
@@ -158,7 +130,7 @@ function drawMaze(maze, svg){
         });
         switch (maze[i][j]) {
           case cellTypes.wall:
-            cell.style("fill", "purple");
+            cell.style("fill", "blue");
             break;
           case cellTypes.empty:
             cell.style("fill", "white");
@@ -167,6 +139,8 @@ function drawMaze(maze, svg){
             cell.style("fill", "green");
             break;
           case cellTypes.goal:
+            dest_x = i;
+            dest_y = j;
             cell.style("fill", "red");
             break;
           case cellTypes.visited:
@@ -186,4 +160,8 @@ var svg = d3.select("body").append("svg");
 var maze = maze1.slice();
 // and draw it!
 drawMaze(maze,svg);
+d3.select('#clear')
+    .on("click",function () {
+  drawMaze(maze,svg);
+});
 </script>
