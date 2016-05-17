@@ -10,15 +10,71 @@ body {
 <script>
 var cellWidth = 20;
 var cellHeight = 20;
+// var cellTypes = {
+//   wall: "X",
+//   empty: " ",
+//   visited: ".",
+//   path: "*",
+//   start: "S",
+//   goal: "G"
+// }
 var cellTypes = {
-  wall: "X",
-  empty: " ",
+  wall: "1",
+  empty: "0",
   visited: ".",
   path: "*",
   start: "S",
   goal: "G"
 }
-var maze1 =  ["XXSXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+var dest_x = 0;
+var dest_y = 1;
+
+var maze1 =  ["1G0100000000100",
+              "100000100000010",
+              "010101001000100",
+              "000000001001100",
+              "100101100011010",
+              "001000000000100",
+              "010100110100010",
+              "000000010101100",
+              "111100010000000",
+              "110000001000000",
+              "111000010011011",
+              "010010000011000",
+              "001010000011001",
+              "110000000100000",
+              "000010001011000"];
+var distance = [[-1,0,1,-1,5,6,7,8,9,10,11,12,-1,30,29],
+
+                [-1,1,2,3,4,5,-1,9,10,11,12,13,14,-1,28],
+
+                [7,-1,3,-1,5,-1,9,10,-1,12,13,14,-1,28,27],
+
+                [6,5,4,5,6,7,8,9,-1,13,14,-1,-1,27,26],
+
+                [-1,6,5,-1,7,-1,-1,10,11,12,-1,-1,-1,-1,25],
+
+                [8,7,-1,9,8,9,10,11,12,13,14,15,-1,25,24],
+
+                [9,-1,13,-1,9,10,-1,-1,13,-1,15,16,17,-1,23],
+
+                [10,11,12,11,10,11,12,-1,14,-1,16,-1,-1,21,22],
+
+                [-1,-1,-1,-1,11,12,13,-1,15,16,17,18,19,20,21],
+
+                [-1,-1,14,13,12,13,14,15,-1,17,18,19,20,21,22],
+
+                [-1,-1,-1,14,13,14,15,-1,19,18,-1,-1,21,-1,-1],
+
+                [-1,-1,16,15,-1,15,16,17,18,19,-1,-1,22,23,24],
+
+                [-1,-1,-1,16,-1,16,17,18,19,20,-1,-1,23,24,-1],
+
+                [-1,-1,18,17,18,17,18,19,20,-1,26,25,24,25,26],
+
+                [21,20,19,18,-1,18,19,20,-1,-1,-1,-1,25,26,27]];
+
+var maze2 =  ["XXSXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
               "XX*XXXXXXXXXXXXX.....XXXXXXXXXXX",
               "XX****XXXXXXXXXX.XXX XX     XXXX",
               "XXXXX*XXXXXX....XXX XX XXX XXXXX",
@@ -38,6 +94,50 @@ var maze1 =  ["XXSXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
               "XXXXXX XXXXXXX XXXXXXXXXXX XXXXX",
               "XXXXXX XXXXXXX XXXXXXXXXXXXXXXXX",
               "XXXXXX            XXXXXXXXXXXXXX"];
+function drawPath(x,y){
+  // alert(String(x));
+  //         alert(String(y));
+  d3.selectAll("rect").each(function(d,i){
+    var elt = d3.select(this);
+    // alert("hahaha");
+    // alert(String(elt.attr("x")/cellWidth));
+    if (elt.attr("y") == x*cellWidth){
+      if(elt.attr("x") == y*cellWidth){
+        elt.transition(0)
+              .style("fill", "green");
+      }
+    }
+});
+}
+
+function findPath(x,y){
+  var pre_x = y;
+  var pre_y = x;
+  var count = 0;
+  while (pre_x != dest_x || pre_y!=dest_y){
+    count = count +1;
+    if(pre_x!=0 && distance[pre_x-1][pre_y]==distance[pre_x][pre_y]-1){
+      pre_x = pre_x-1;
+      drawPath(pre_x,pre_y);
+    }else if(pre_y!=0 && distance[pre_x][pre_y-1]==distance[pre_x][pre_y]-1){
+      pre_y = pre_y-1;
+      drawPath(pre_x,pre_y);
+    }else if (pre_y!= distance[pre_x].length && distance[pre_x][pre_y+1]==distance[pre_x][pre_y]-1){
+      pre_y = pre_y+1;
+      drawPath(pre_x,pre_y);
+    }else if(pre_x!= distance.length && distance[pre_x+1][pre_y]==distance[pre_x][pre_y]-1){
+      pre_x = pre_x+1;
+      drawPath(pre_x,pre_y);
+    }
+    // if (count ==12){
+    //   alert(String(pre_x));
+    //   alert(String(pre_y));
+    //   break;
+    // }
+    // break;
+  }
+}
+
 function drawMaze(maze, svg){
     var size = {
       width : maze[0].length,
@@ -48,7 +148,14 @@ function drawMaze(maze, svg){
     for(var i = 0; i < size.height;i++){
       for(var j = 0; j < size.width;j++){
         // draw a rectangle for each maze cell
-        var cell = svg.append("rect").attr("x", j*cellWidth).attr("y", i*cellHeight).attr("width", cellWidth).attr("height", cellHeight);
+        var cell = svg.append("rect").attr("x", j*cellWidth).attr("y", i*cellHeight).attr("width", cellWidth).attr("height", cellHeight).on("click", function(){
+            d3.select(this)
+              .transition(0)
+              .style("fill", "red");
+              findPath(d3.select(this).attr("x")/cellWidth,d3.select(this).attr("y")/cellHeight);
+              // alert(String(d3.select(this).attr("x")/cellWidth));
+              // alert(String(d3.select(this).attr("y")/cellHeight));
+        });
         switch (maze[i][j]) {
           case cellTypes.wall:
             cell.style("fill", "purple");
